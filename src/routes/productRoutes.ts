@@ -3,6 +3,11 @@ import Product from '../models/Product';
 
 const router = express.Router();
 
+// Health check endpoint
+router.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Get all products
 router.get('/', async (req, res) => {
   try {
