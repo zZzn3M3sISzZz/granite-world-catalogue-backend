@@ -2,14 +2,28 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/server.ts",
+      "src": "dist/server.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "src/server.ts"
+      "src": "/(.*)",
+      "dest": "dist/server.js",
+      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "https://granite-world-catalogue.vercel.app",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Credentials": "true"
+      }
     }
-  ]
+  ],
+  "regions": ["bom1"],
+  "functions": {
+    "dist/server.js": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  }
 } 

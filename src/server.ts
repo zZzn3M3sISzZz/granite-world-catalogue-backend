@@ -17,25 +17,20 @@ app.use((req, res, next) => {
 });
 
 // CORS configuration
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  next();
-});
+const corsOptions = {
+  origin: ['http://localhost:5173', 'https://granite-world-catalogue.vercel.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  maxAge: 86400 // 24 hours
+};
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Error:', err);
-  res.status(500).json({ error: 'Internal Server Error' });
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
 // Routes
@@ -46,6 +41,12 @@ app.use('/api/gallery', galleryRoutes);
 // Basic test route
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Granite World Catalogue API' });
+});
+
+// Error handling middleware
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Error:', err);
+  res.status(500).json({ error: 'Internal Server Error' });
 });
 
 // MongoDB connection
