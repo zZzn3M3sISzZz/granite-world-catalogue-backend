@@ -118,8 +118,13 @@ mongoose.connection.on('error', (error) => {
   console.error('MongoDB connection error:', error);
 });
 
-// Start server
-const port = process.env.PORT || 5000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-}); 
+// Start server only in development
+if (process.env.NODE_ENV !== 'production') {
+  const port = process.env.PORT || 5000;
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
+
+// Export the app for Vercel serverless
+module.exports = app; 
