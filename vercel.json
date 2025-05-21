@@ -8,28 +8,8 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "headers": {
-        "Access-Control-Allow-Origin": "https://granite-world-catalogue.vercel.app",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "*",
-        "Access-Control-Allow-Credentials": "true"
-      },
-      "continue": true
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
       "src": "/(.*)",
       "dest": "dist/server.js"
     }
-  ],
-  "regions": ["bom1"],
-  "functions": {
-    "api/**": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  }
+  ]
 } 
