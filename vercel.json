@@ -10,12 +10,15 @@
     {
       "src": "/api/(.*)",
       "headers": {
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": "https://granite-world-catalogue.vercel.app",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept, Authorization",
-        "Access-Control-Max-Age": "86400"
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Credentials": "true"
       },
       "continue": true
+    },
+    {
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",

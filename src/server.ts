@@ -15,11 +15,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://granite-world-catalogue.vercel.app'
+];
+
 app.use(cors({
-  origin: '*',
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-  maxAge: 86400,
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
 
 // Handle preflight requests
@@ -42,11 +56,20 @@ app.get('/health', (req, res) => {
 
 // Routes with timeout handling
 const timeoutMiddleware = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  res.setTimeout(5000, () => {
+  res.setTimeout(8000, () => {
     res.status(504).json({ error: 'Request timeout' });
   });
   next();
 };
+
+// Add CORS headers to all responses
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://granite-world-catalogue.vercel.app');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
 
 app.use('/api/products', timeoutMiddleware, productRoutes);
 app.use('/api/customer-queries', timeoutMiddleware, customerQueryRoutes);
@@ -67,8 +90,10 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/granite-world';
 
 mongoose.connect(MONGODB_URI, {
-  serverSelectionTimeoutMS: 5000, // 5 seconds timeout for server selection
-  socketTimeoutMS: 45000, // 45 seconds timeout for operations
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+  connectTimeoutMS: 10000,
+  maxPoolSize: 10
 });
 
 mongoose.connection.on('connected', () => {
