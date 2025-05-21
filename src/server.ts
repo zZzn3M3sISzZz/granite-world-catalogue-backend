@@ -80,6 +80,20 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Granite World Catalogue API' });
 });
 
+// Add CORS headers to all responses (including 404)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://granite-world-catalogue.vercel.app');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+
+// 404 handler (after all routes)
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not found' });
+});
+
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
